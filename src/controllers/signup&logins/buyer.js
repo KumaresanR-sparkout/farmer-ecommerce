@@ -1,27 +1,28 @@
-import Admin from '../../models/admin.model'
+import Buyer from '../../models/buyer.models'
 import * as jwtToken from '../../tokens/jwt-token'
 import * as response from '../../utils/response-util'
 
-export const subAdminRegister = async (req, res) => {
+export const buyerRegister = async (req, res) => {
     try {
 
-        const user = await Admin.create({ ...req.body, ...req.role })
-        return response.sendSuccess(res, 200, 'created', [user])
+        const user = await Buyer.create(req.body)
+        return response.sendSuccess(res, 200, 'please verify your kyc and enjoy', [user])
     }
     catch (error) {
-        return response.sendError(res,500, error.message)
+        return response.sendError(res, 500, error.message)
     }
 }
 
-export const subAdminLogin = async (req, res) => {
+export const buyerLogin = async (req, res) => {
     try {
         const { email, password } = req.body
 
-        const existingUser = await Admin.findOne({ "email": email })
+        const existingUser = await Buyer.findOne({ "email": email })
         if (!existingUser) {
             return response.sendError(res, 400, "In valid email")
         }
-
+        //console.log(existingUser)
+        
         if (existingUser.password != password) {
             return response.sendError(res, 400, "In valid password")
         }
@@ -41,10 +42,10 @@ export const subAdminLogin = async (req, res) => {
     }
 }
 
-export const subAdminUpdate = async (req, res) => {
+export const buyerUpdate = async (req, res) => {
     try {
         const { userId } = req.query
-        const updatedUser = await Admin.findByIdAndUpdate(userId, req.body, {
+        const updatedUser = await Buyer.findByIdAndUpdate(userId, req.body, {
             new: true
         }).select('-password -__v')
 
@@ -61,13 +62,13 @@ export const subAdminUpdate = async (req, res) => {
 //@description  delete login function
 //@route        
 //@acess        protected
-export const subAdminDelete = async (req, res) => {
+export const buyerDelete = async (req, res) => {
     try {
         const { userId } = req.query
         if (!userId) {
             return response.sendError(res, 400, 'please send userId to delete')
         }
-        const deleteUser = await Admin.findByIdAndDelete(userId)
+        const deleteUser = await Buyer.findByIdAndDelete(userId)
         //console.log(deleteUser)
         if (!deleteUser) {
             return response.sendError(res, 400, 'you are not the user to delete the details')

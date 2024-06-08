@@ -9,7 +9,7 @@ export const adminRegister = async (req, res, next) => {
             email: Joi.string().email(),
             password: Joi.string().pattern(new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/)).required(),
             contact: Joi.string().required(),
-            role: Joi.string().valid('admin', 'subadmin', 'buyer', 'farmer').required()
+            role: Joi.string().valid('admin', 'subadmin').required()
         }).with('name', 'email')
         const validatedSchema = await validateUserSchema.validateAsync(user)
         next()

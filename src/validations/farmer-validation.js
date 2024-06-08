@@ -10,7 +10,8 @@ export const farmerRegister = async (req, res, next) => {
             name: Joi.string(),
             email: Joi.string().email(),
             password: Joi.string().pattern(new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/)).required(),
-            contact: Joi.string().required()
+            contact: Joi.string().required(),
+            country: Joi.string().required()
         }).with('name', 'email')
         const validatedSchema = await validateUserSchema.validateAsync(req.body)
         next()
@@ -55,7 +56,8 @@ export const farmerUpdate = async (req, res, next) => {
             name: Joi.string(),
             email: Joi.string().email(),
             password: Joi.string().pattern(new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/)),
-            contact: Joi.string()
+            contact: Joi.string(),
+            country: Joi.string()
         })
 
         const validatedSchema = await validateUpdateSchema.validateAsync({ userId, ...user })

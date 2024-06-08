@@ -3,14 +3,17 @@ import { sendError } from '../utils/response-util'
 
 export const buyerRegister = async (req, res, next) => {
     try {
-        const user = { ...req.body, ...req.role }
+        if (Object.keys(req.body).length == 0) {
+            return sendError(res, 400, 'Empty body should not be accepted')
+        }
         const validateUserSchema = Joi.object({
             name: Joi.string(),
             email: Joi.string().email(),
             password: Joi.string().pattern(new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/)).required(),
-            contact: Joi.string().required()
+            contact: Joi.string().required(),
+            country:Joi.string().required()
         }).with('name', 'email')
-        const validatedSchema = await validateUserSchema.validateAsync(user)
+        const validatedSchema = await validateUserSchema.validateAsync(req.body)
         next()
     }
     catch (error) {
@@ -20,6 +23,9 @@ export const buyerRegister = async (req, res, next) => {
 
 export const buyerLogin = async (req, res, next) => {
     try {
+        if (Object.keys(req.body).length == 0) {
+            return sendError(res, 400, 'Empty body should not be accepted')
+        }
         const { email, password } = req.body
         const validateLoginSchema = Joi.object({
             email: Joi.string().email(),
@@ -50,7 +56,8 @@ export const buyerUpdate = async (req, res, next) => {
             name: Joi.string(),
             email: Joi.string().email(),
             password: Joi.string().pattern(new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/)),
-            contact: Joi.string()
+            contact: Joi.string(),
+            country:Joi.string()
         })
 
         const validatedSchema = await validateUpdateSchema.validateAsync({ userId, ...user })

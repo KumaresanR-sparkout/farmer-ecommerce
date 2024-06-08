@@ -21,6 +21,11 @@ const FarmerSchema = new mongoose.Schema({
         trim: true,
         required: true,
     },
+    country: {
+        type: String,
+        trim: true,
+        required: true
+    },
     role: {
         type: String,
         default: 'farmer'

@@ -9,7 +9,7 @@ export const farmerRegister = async (req, res) => {
         return response.sendSuccess(res, 200, 'created', [user])
     }
     catch (error) {
-        return response.sendError(500, res, error.message)
+        return response.sendError(res,500, error.message)
     }
 }
 
@@ -46,7 +46,7 @@ export const farmerUpdate = async (req, res) => {
         const { userId } = req.query
         const updatedUser = await Farmer.findByIdAndUpdate(userId, req.body, {
             new: true
-        })
+        }).select('-password -__v')
 
         if (!updatedUser) {
             return response.sendError(res, 400, 'you are not the user to update the details')
