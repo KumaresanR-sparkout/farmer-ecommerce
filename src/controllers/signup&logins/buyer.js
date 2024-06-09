@@ -1,9 +1,13 @@
 import Buyer from '../../models/buyer.models'
 import * as jwtToken from '../../tokens/jwt-token'
 import * as response from '../../utils/response-util'
+import { encryptPassword, decryptPassword } from '../../bcrypt/bcrypt'
 
 export const buyerRegister = async (req, res) => {
     try {
+
+        const encrypt = await encryptPassword(req.body.password)
+        req.body.password = encrypt
 
         const user = await Buyer.create(req.body)
         return response.sendSuccess(res, 200, 'please verify your kyc and enjoy', [user])
@@ -21,14 +25,18 @@ export const buyerLogin = async (req, res) => {
         if (!existingUser) {
             return response.sendError(res, 400, "In valid email")
         }
-        //console.log(existingUser)
-        
-        if (existingUser.password != password) {
+        console.log(existingUser)
+
+        const decrypt = await decryptPassword(password, existingUser.password)
+
+        if (!decrypt) {
             return response.sendError(res, 400, "In valid password")
         }
         const userToken = await jwtToken.generateToken({
-            "jwt": "jwtToken"
+            "kyc": existingUser.kyc,
+            'role':'buyer'
         })
+
         const sendUserDetails = {
             "userId": existingUser._id,
             "email": existingUser.email,

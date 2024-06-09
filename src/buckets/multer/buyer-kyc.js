@@ -14,12 +14,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 export default upload
 
-export const sendFile = async (req, res) => {
+export const updateBuyerKYC = async (req, res) => {
     try {
         const userId=req.query.userId
         const proofLocation=path.resolve(req.files[0].path)
         const body={
-            kyc:'approved',
             idProof:proofLocation
         }
         const updatekyc=await Buyer.findByIdAndUpdate(userId, body, {

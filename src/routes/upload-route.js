@@ -1,10 +1,13 @@
 import express from 'express'
-import upload from '../buckets/multer/upload-kyc'
-import { sendFile } from '../buckets/multer/upload-kyc'
+import uploadBuyerKYC from '../buckets/multer/buyer-kyc'
+import uploadProductKYC from '../buckets/multer/product-kyc'
+import { updateBuyerKYC } from '../buckets/multer/buyer-kyc'
+import { updateProductKyc } from '../buckets/multer/product-kyc'
 const router = express.Router()
 
 //@POST
-router.post('/upload', upload.any(), sendFile)
+router.post('/upload/buyer', uploadBuyerKYC.any(), updateBuyerKYC)
+router.post('/upload/product', uploadProductKYC.any(), updateProductKyc)
 ///@GET
 
 //@PATCh

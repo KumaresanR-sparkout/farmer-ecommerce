@@ -1,15 +1,19 @@
 import Admin from '../../models/admin.model'
 import * as jwtToken from '../../tokens/jwt-token'
 import * as response from '../../utils/response-util'
+import { encryptPassword, decryptPassword } from '../../bcrypt/bcrypt'
 
 export const subAdminRegister = async (req, res) => {
     try {
+
+        const encrypt = await encryptPassword(req.body.password)
+        req.body.password = encrypt
 
         const user = await Admin.create({ ...req.body, ...req.role })
         return response.sendSuccess(res, 200, 'created', [user])
     }
     catch (error) {
-        return response.sendError(res,500, error.message)
+        return response.sendError(res, 500, error.message)
     }
 }
 
@@ -22,9 +26,12 @@ export const subAdminLogin = async (req, res) => {
             return response.sendError(res, 400, "In valid email")
         }
 
-        if (existingUser.password != password) {
+        const decrypt = await decryptPassword(password, existingUser.password)
+
+        if (!decrypt) {
             return response.sendError(res, 400, "In valid password")
         }
+
         const userToken = await jwtToken.generateToken({
             "jwt": "jwtToken"
         })

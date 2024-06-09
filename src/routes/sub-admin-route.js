@@ -11,7 +11,7 @@ const router = express.Router()
 //GET
 router.get('/sub-admin/user', roleMiddleware.subAdmin, subAdminValidation.SubAdminLogin, subAdminController.subAdminRegister)
 router.get('/sub-admin/lists',subAdmins.subAdminLists)
-router.get('/sub-admin/lists',subAdmins.subAdminDetails)
+router.get('/sub-admin/details',subAdmins.subAdminDetails)
 //@PUT
 
 //@PATCH

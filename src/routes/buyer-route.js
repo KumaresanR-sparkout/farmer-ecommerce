@@ -1,15 +1,16 @@
 import express from 'express'
 import * as buyerController from '../controllers/signup&logins/buyer'
 import * as buyerValidation from '../validations/buyer-validation'
-const router=express.Router()
+import * as jwt from '../tokens/jwt-token'
+const router = express.Router()
 
 //@POST
-router.post('/buyer',buyerValidation.buyerRegister,buyerController.buyerRegister)
+router.post('/buyer', buyerValidation.buyerRegister, buyerController.buyerRegister)
 //@GET
-router.get('/buyer',buyerValidation.buyerLogin,buyerController.buyerLogin)
+router.get('/buyer', buyerValidation.buyerLogin, buyerController.buyerLogin)
 //@PUT
-router.patch('/buyer',buyerValidation.buyerUpdate,buyerController.buyerUpdate)
+router.patch('/buyer', jwt.buyerToken, buyerValidation.buyerUpdate, buyerController.buyerUpdate)
 //@DELETE
-router.delete('/buyer',buyerValidation.buyerDelete,buyerController.buyerDelete)
+router.delete('/buyer', jwt.buyerToken, buyerValidation.buyerDelete, buyerController.buyerDelete)
 
 export default router
