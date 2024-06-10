@@ -2,7 +2,7 @@ import express from 'express'
 import env from 'dotenv'
 import helmet from 'helmet'
 import { dbConnection } from './config/dbConfig'
-import mainRouter from './routes/common-route'
+import mainRouter from './routes/main-routes/common-route'
 env.config()
 
 const app = express()

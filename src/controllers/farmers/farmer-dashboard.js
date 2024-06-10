@@ -11,13 +11,7 @@ export const listProducts = async (req, res) => {
         }
         const productLists = await Product.find()
             .populate({
-                path: 'category', match: {
-                    $or: [{
-                        _id: req.body.categoryId
-                    },
-                    { name: req.body.name }
-                    ]
-                }, select: { 'createdAt': 0, 'updatedAt': 0, '__v': 0 }
+                path: 'category', match: { name: req.body.category }, select: { 'createdAt': 0, 'updatedAt': 0, '__v': 0 }
             })
             .populate({
                 path: 'farmer', select: { 'password': 0, '__v': 0 }

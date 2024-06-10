@@ -1,23 +1,26 @@
 import Buyer from '../../models/buyer.models'
+import { sendEmail } from '../../emails/mail-sender'
+import { KYCApproveTemplate } from '../../emails/templates/approve-kyc-template'
 import * as response from '../../utils/response-util'
 
-export const BuyerKYCProcess = async (req, res) => {
+export const buyerKYCProcess = async (req, res) => {
     try {
         if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'send buyerid to update')
+            return response.sendError(res, 400, 'send buyerId to update the KYC')
         }
         if (Object.keys(req.body).length == 0) {
-            return response.sendError(res, 400, 'Empty content should not be accepted')
+            return response.sendError(res, 400, 'send content to update the KYC')
         }
 
-        const buyerKYC = await Buyer.findByIdAndUpdate(req.query.userId, req.body, {
+        const buyer = await Buyer.findByIdAndUpdate(req.query.buyerId, req.body, {
             new: true
-        }).select('name email kyc')
+        }).select('-password -__v')
 
-        if (!buyerKYC) {
-            return response.sendError(res, 400, 'not able to update kyc process')
+        if (!buyer) {
+            return response.sendError(res, 400, 'cound not update your status')
         }
-        return response.sendSuccess(res, 200, 'update kyc', [buyerKYC])
+        await sendEmail(buyer.email, 'your kyc has been approved', KYCApproveTemplate(buyer.name))
+        return response.sendSuccess(res, 200, 'kyc status', buyer)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)
@@ -27,7 +30,7 @@ export const BuyerKYCProcess = async (req, res) => {
 export const allBuyers = async (req, res) => {
     try {
         const allBuyer = await Buyer.find({}, { password: 0 })
-        return response.sendSuccess(res, 200, 'all buyers', allBuyers)
+        return response.sendSuccess(res, 200, 'all buyers', allBuyer)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)
@@ -64,6 +67,9 @@ export const BuyerDetails = async (req, res) => {
 
 export const buyerSearch = async (req, res) => {
     try {
+        if (Object.keys(req.query).length == 0) {
+            return response.sendError(res, 400, 'send query to search')
+        }
         const buyerDetails = await Buyer.find({
             $or: [
                 { ...req.query }

@@ -1,8 +1,13 @@
 import Category from '../../models/category.model'
+import { availableCategory } from '../middlewares/available-category'
 import * as response from '../../utils/response-util'
 
 export const createCategory = async (req, res) => {
     try {
+        const available=await availableCategory(req.body.name)
+        if(!available){
+            return response.sendError(res,400,'you are requesting category is not available')
+        }
         const category = await Category.create(req.body)
         return response.sendSuccess(res, 200, 'category created', [category])
     } catch (error) {

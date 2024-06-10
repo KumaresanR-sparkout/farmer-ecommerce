@@ -57,3 +57,17 @@ export const farmerToken = async (req, res, next) => {
     }
     next()
 }
+
+export const adminToken = async (req, res, next) => {
+    const token = req.header('Authorization')
+    if (!token) {
+        return sendError(res, 400, 'send token to acess the route')
+    }
+    const bearerToken = token.split(' ')[1]
+    const verifyJwtToken = await JWT.verify(bearerToken, process.env.SECRET)
+
+    if (verifyJwtToken.jwt != 'admin') {
+        return sendError(res, 400, 'your not the right user to acess the resource')
+    }
+    next()
+}

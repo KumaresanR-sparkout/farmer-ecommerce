@@ -1,8 +1,8 @@
 import express from 'express'
-import * as farmerValidation from '../validations/farmer-validation'
-import * as farmerController from '../controllers/signup&logins/farmer'
-import * as farmers from '../controllers/farmers/farmer-controller'
-import * as jwt from '../tokens/jwt-token'
+import * as farmerValidation from '../../validations/farmer-validation'
+import * as farmerController from '../../controllers/signup&logins/farmer'
+import * as farmers from '../../controllers/farmers/farmer-controller'
+import * as jwt from '../../tokens/jwt-token'
 const router = express.Router()
 
 //@POST

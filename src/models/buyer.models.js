@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { sendEmail } from '../emails/kyc-verify-email'
+import { sendEmail } from '../emails/mail-sender'
 import { KYCVerifyTemplate } from '../emails/templates/verify-kyc-template'
 const BuyerSchema = new mongoose.Schema({
     name: {
