@@ -1,5 +1,6 @@
 import multer from 'multer'
 import path from 'path'
+import mongoose from 'mongoose'
 import * as response from '../../utils/response-util'
 import Buyer from '../../models/buyer.models'
 import { json } from 'express'
@@ -19,7 +20,13 @@ export default upload
 export const updateBuyerKYC = async (req, res) => {
     try {
 
+        if (Object.keys(req.query).length == 0) {
+            return response.sendError(res, 400, 'send id to update product')
+        }
         const userId = req.query.userId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return response.sendError(res, 400, 'send valid id')
+        }
         const proofLocation = path.resolve(req.files[0].path)
         const body = {
             idProof: proofLocation

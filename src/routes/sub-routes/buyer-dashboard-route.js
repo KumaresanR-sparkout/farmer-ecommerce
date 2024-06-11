@@ -9,6 +9,7 @@ const router = express.Router()
 router.get('/buyer/dashboard/search', jwt.buyerToken, buyer.filterProducts)
 router.get('/buyer/order', jwt.buyerToken, buyer.orderProducts)
 router.get('/buyer/product',jwt.buyerToken,buyer.productDetails)
+router.get('/buyer/order/list',jwt.buyerToken,buyer.buyerOrders)
 //@PUT
 
 //@PATCH

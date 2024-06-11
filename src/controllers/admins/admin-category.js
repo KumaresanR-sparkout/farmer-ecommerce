@@ -46,10 +46,10 @@ export const deleteCategory=async(req,res)=>{
 
         }
         const product=await Product.deleteMany({categoryId:req.query.categoryId})
-        if(product.deletedCount==0){
-            return response.sendError(res,400,'no product found to delete')
+        // if(product.deletedCount==0){
+        //     return response.sendError(res,400,'no product found to delete')
 
-        }
+        // }
         return response.sendSuccess(res,200,'category and releated things deleted',[])
     }
     catch(error){

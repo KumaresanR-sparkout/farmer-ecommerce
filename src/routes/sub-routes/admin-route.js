@@ -15,6 +15,7 @@ import * as farmerValidation from '../../validations/farmer-validation'
 import * as farmerController from '../../controllers/signup&logins/farmer'
 import * as farmers from '../../controllers/farmers/farmer-controller'
 import * as jwt from '../../tokens/jwt-token'
+import { updateProductKyc } from '../../controllers/products/product-controller'
 const router = express.Router()
 
 //@POST
@@ -32,6 +33,9 @@ router.get('/admin/buyer/search', jwt.adminToken, buyerManagement.buyerSearch)
 router.get('/admin/farmer/lists', jwt.adminToken, farmers.farmerLists)
 router.get('/admin/farmer/search', jwt.adminToken, farmers.farmerSearch)
 router.get('/admin/farmer/details', jwt.adminToken, farmers.farmerDetails)
+router.get('/admin/product/details', jwt.adminToken, adminProduct.productDetails)
+router.get('/admin/product', jwt.adminToken, adminProduct.getProductDetails)
+
 
 //@PUT
 
@@ -40,13 +44,15 @@ router.patch('/admin/user', jwt.adminToken, adminValidation.adminUpdate, adminCo
 router.patch('/admin/buyer/kyc', jwt.adminToken, buyerManagement.buyerKYCProcess)
 router.patch('/admin/category', jwt.adminToken, adminCategoryValidation.updateCategory, adminCategory.updateCategory)
 router.patch('/admin/product', jwt.adminToken, adminProductValidation.updateProduct, adminProduct.updateProduct)
+router.patch('/admin/product/kyc', jwt.adminToken, updateProductKyc)
 
 
 //@DELETE
 router.delete('/admin/user', jwt.adminToken, adminValidation.adminDelete, adminController.adminDelete)
 router.delete('/admin/buyer', jwt.adminToken, buyerValidation.buyerDelete, buyerController.buyerDelete)
 router.delete('/admin/farmer', jwt.adminToken, farmerValidation.farmerDelete, farmerController.farmerDelete)
-router.delete('/admin/category',jwt.adminToken,adminCategory.deleteCategory)
+router.delete('/admin/category', jwt.adminToken, adminCategory.deleteCategory)
+router.delete('/admin/product', jwt.adminToken, adminProduct.deleteProduct)
 
 
 

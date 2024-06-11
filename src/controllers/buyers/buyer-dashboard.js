@@ -158,3 +158,20 @@ export const productDetails = async (req, res) => {
         return response.sendError(res, 500, error.message)
     }
 }
+
+export const buyerOrders=async(req,res)=>{
+    try{
+        if(Object.keys(req.query).length==0){
+            return response.sendError(res,400,'send id to access')
+        }
+        if(!mongoose.Types.ObjectId.isValid(req.query.buyerId)){
+            return response.sendError(res,400,'send valid id')
+        }
+        const buyerOrder=await Order.find({buyerId:req.query.buyerId})
+        .populate({path:'productId'})
+        return response.sendSuccess(res,200,'buyer order lists',buyerOrder)
+    }
+    catch(error){
+        return response.sendError(res, 500, error.message)
+    }
+}
