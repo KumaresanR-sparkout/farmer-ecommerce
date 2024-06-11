@@ -1,18 +1,19 @@
 import express from 'express'
 import * as buyer from '../../controllers/buyers/buyer-dashboard'
+import * as jwt from '../../tokens/jwt-token'
 const router = express.Router()
 
 //@POST
 
-
 //GET
-router.get('/buyer/dashboard/search',buyer.filterProducts)
-router.get('/buyer/order',buyer.orderProducts)
+router.get('/buyer/dashboard/search', jwt.buyerToken, buyer.filterProducts)
+router.get('/buyer/order', jwt.buyerToken, buyer.orderProducts)
+router.get('/buyer/product',jwt.buyerToken,buyer.productDetails)
 //@PUT
 
 //@PATCH
-// router.patch('/farmer', farmerValidation.farmerUpdate, farmerController.farmerUpdate)
+
 //@DELETE
-// router.delete('/farmer', farmerValidation.farmerDelete, farmerController.farmerDelete)
+
 
 export default router

@@ -41,6 +41,9 @@ export const adminUpdate = async (req, res, next) => {
         if (!userId) {
             return sendError(res, 400, 'please send userId to update')
         }
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return sendError(res, 400, 'send valid id');
+        }
 
         if (Object.keys(req.body).length == 0) {
             return sendError(res, 400, 'no body content find to update')
@@ -69,6 +72,9 @@ export const adminDelete = async (req, res, next) => {
             return sendError(res, 400, "please send userId to delete")
         }
         const { userId } = req.query
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return sendError(res, 400, 'send valid id');
+        }
         const validateDeleteSchema = Joi.object({
             userId: Joi.string().required(),
         })

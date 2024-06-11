@@ -70,6 +70,7 @@ export const adminDelete = async (req, res) => {
         if (!userId) {
             return response.sendError(res, 400, 'please send userId to delete')
         }
+        
         const deleteUser = await Admin.findByIdAndDelete(userId)
         //console.log(deleteUser)
         if (!deleteUser) {

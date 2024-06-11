@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import Farmer from '../../models/former.model'
 import * as response from '../../utils/response-util'
 
@@ -31,6 +32,9 @@ export const farmerDetails = async (req, res) => {
     try {
         if (Object.keys(req.query).length == 0) {
             return response.sendError(res, 400, 'pass id to get details')
+        }
+        if(!mongoose.Types.ObjectId.isValid(req.query.userId)){
+            return response.sendError(res,400,'send valid id')
         }
         const farmerDetails = await Farmer.findById(req.query.userId).select('-password -__v')
         if (!farmerDetails) {

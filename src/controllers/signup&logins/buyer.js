@@ -1,4 +1,5 @@
 import Buyer from '../../models/buyer.models'
+import mongoose from 'mongoose'
 import * as jwtToken from '../../tokens/jwt-token'
 import * as response from '../../utils/response-util'
 import { encryptPassword, decryptPassword } from '../../bcrypt/bcrypt'
@@ -75,6 +76,9 @@ export const buyerDelete = async (req, res) => {
         const { userId } = req.query
         if (!userId) {
             return response.sendError(res, 400, 'please send userId to delete')
+        }
+        if(!mongoose.Types.ObjectId.isValid(userId)){
+            return response.sendError(res,400,'send valid id')
         }
         const deleteUser = await Buyer.findByIdAndDelete(userId)
         //console.log(deleteUser)

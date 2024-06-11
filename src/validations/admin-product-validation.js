@@ -24,9 +24,10 @@ export const updateProduct = async (req, res, next) => {
         if (Object.keys(req.query).length == 0) {
             return sendError(res, 400, 'send id to update the category')
         }
-        // if (!mongoose.Types.ObjectId(req.query.categoryId)) {
-        //     return sendError(res, 400, 'send valid category id')
-        // }
+    
+        if (!mongoose.Types.ObjectId.isValid(req.query.productId)) {
+            return sendError(res, 400, 'send valid id');
+        }
         if (Object.keys(req.body).length == 0) {
             return sendError(res, 400, 'Empty content should not be accepted')
         }

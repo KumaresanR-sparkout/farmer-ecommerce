@@ -1,5 +1,6 @@
 import Joi from 'joi'
 import { sendError } from '../utils/response-util'
+import mongoose from 'mongoose'
 
 export const farmerRegister = async (req, res, next) => {
     try {
@@ -75,6 +76,9 @@ export const farmerDelete = async (req, res, next) => {
             return sendError(res, 400, "please send userId to delete")
         }
         const { userId } = req.query
+        if(!mongoose.Types.ObjectId.isValid(userId)){
+            return sendError(res,400,'send valid id')
+        }
         const validateDeleteSchema = Joi.object({
             userId: Joi.string().required(),
         })

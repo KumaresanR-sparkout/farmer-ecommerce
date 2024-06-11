@@ -46,7 +46,7 @@ export const buyerTemplate = (orderData) => {
     </style>
 </head>
 <body>
-    <p>Dear Customer,${buyer}</p>
+    <p>Dear Customer, ${buyer}</p>
     <p>Thank you for your order. Here are the details of your purchase:</p>
     <table>
         <tr>

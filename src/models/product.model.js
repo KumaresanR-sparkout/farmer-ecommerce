@@ -2,11 +2,6 @@ import { required } from "joi"
 import mongoose from "mongoose"
 
 const ProductSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        trim: true,
-        required: true
-    },
     price: {
         type: Number,
         required: true
@@ -15,11 +10,15 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    category: {
+    categoryId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category'
+        ref: 'AdminCategory'
     },
-    farmer: {
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AdminProduct'
+    },
+    farmerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Farmer'
     },
