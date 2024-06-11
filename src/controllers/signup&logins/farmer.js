@@ -71,7 +71,7 @@ export const farmerDelete = async (req, res) => {
             return response.sendError(res, 400, 'please send userId to delete')
         }
         const deleteUser = await Farmer.findByIdAndDelete(userId)
-        //console.log(deleteUser)
+        
         if (!deleteUser) {
             return response.sendError(res, 400, 'you are not the user to delete the details')
         }

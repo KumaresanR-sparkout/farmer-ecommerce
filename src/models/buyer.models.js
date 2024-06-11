@@ -31,6 +31,11 @@ const BuyerSchema = new mongoose.Schema({
         type: String,
         default: 'buyer'
     },
+    status: {
+        type: String,
+        default: 'unblock',
+        enum: ['unblock', 'block']
+    },
     kyc: {
         type: String,
         default: 'pending',

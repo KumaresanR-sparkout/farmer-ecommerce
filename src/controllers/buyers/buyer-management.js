@@ -10,7 +10,7 @@ export const buyerKYCProcess = async (req, res) => {
             return response.sendError(res, 400, 'send buyerId to update the KYC')
         }
         if (!mongoose.Types.ObjectId.isValid(req.query.buyerId)) {
-            return sendError(res, 400, 'send valid id');
+            return response.sendError(res, 400, 'send valid id');
         }
         if (Object.keys(req.body).length == 0) {
             return response.sendError(res, 400, 'send content to update the KYC')
@@ -58,7 +58,7 @@ export const BuyerDetails = async (req, res) => {
             return response.sendError(res, 400, 'send buyerid for details')
         }
         if (!mongoose.Types.ObjectId.isValid(req.query.buyerId)) {
-            return sendError(res, 400, 'send valid id');
+            return response.sendError(res, 400, 'send valid id');
         }
         const buyerDetails = await Buyer.findById(req.query.buyerId).select('-password -__v')
         if (!buyerDetails) {
@@ -82,8 +82,30 @@ export const buyerSearch = async (req, res) => {
             ]
         },
             { 'password': 0, '__v': 0, 'idProof': 0 })
-        //console.log(buyerDetails)
+        
         return response.sendSuccess(res, 200, 'search buyer lists', buyerDetails)
+    }
+    catch (error) {
+        return response.sendError(res, 500, error.message)
+    }
+}
+
+export const buyerStatus = async (req, res) => {
+    try {
+        if (Object.keys(req.query).length == 0) {
+            return response.sendError(res, 400, 'pass id to update')
+        }
+        if (!mongoose.Types.ObjectId.isValid(req.query.buyerId)) {
+            return response.sendError(res, 400, 'send valid id');
+        }
+
+        const buyer = await Buyer.findByIdAndUpdate(req.query.buyerId, {
+            status: 'block'
+        }).select('name email status')
+        if (!buyer) {
+            return response.sendError(res, 400, 'no user found to update')
+        }
+        return response.sendSuccess(res, 200, 'buyer has been blocked', buyer)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)

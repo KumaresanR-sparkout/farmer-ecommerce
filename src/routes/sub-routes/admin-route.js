@@ -51,6 +51,7 @@ router.patch('/buyer/kyc', jwt.adminToken, buyerManagement.buyerKYCProcess)
 router.patch('/category', jwt.adminToken, adminCategoryValidation.updateCategory, adminCategory.updateCategory)
 router.patch('/product', jwt.adminToken, adminProductValidation.updateProduct, adminProduct.updateProduct)
 router.patch('/product/kyc', jwt.adminToken, updateProductKyc)
+router.patch('/buyer/status',jwt.adminToken,buyerManagement.buyerStatus)
 
 
 //@DELETE

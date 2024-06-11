@@ -73,7 +73,7 @@ export const farmerUpdate = async (req, res, next) => {
     }
 }
 
-//@description  validating delete user data
+
 export const farmerDelete = async (req, res, next) => {
     try {
         if (Object.keys(req.query).length == 0) {

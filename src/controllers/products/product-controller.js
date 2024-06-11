@@ -16,7 +16,7 @@ export const createProduct = async (req, res) => {
 }
 export const listProduct = async (req, res) => {
     try {
-        //return res.send('123')
+        
         const { categoryId, product } = req.body
         if (categoryId && (!mongoose.Types.ObjectId.isValid(categoryId))) {
             return response.sendError(res, 400, 'send valid id')
@@ -29,7 +29,7 @@ export const listProduct = async (req, res) => {
             categoryFilter.categoryId = categoryId
         }
         const productRegex = product ? product : ''
-        //console.log(categoryFilter)
+        
         const productList = await Product.find(categoryFilter, { 'createdAt': 0, 'updatedAt': 0, '__v': 0 })
             .populate({
                 path: 'productId', match: {
@@ -129,7 +129,7 @@ export const updateProductKyc = async (req, res) => {
         if (Object.keys(req.query).length == 0) {
             return response.sendError(res, 400, 'send id to get details')
         }
-        //return res.send(req.query.productId)
+        
         if (!mongoose.Types.ObjectId.isValid(req.query.productId)) {
             return response.sendError(res, 400, 'send valid id')
         }

@@ -16,7 +16,7 @@ export const filterProducts = async (req, res) => {
         let categoryId = req.body.categoryId
         let farmerName = req.body.farmerName
         let productName = req.body.productName
-        // console.log(product)
+        
         if (categoryId && (!mongoose.Types.ObjectId.isValid(categoryId))) {
             return response.sendError(res, 400, 'send valid id')
         }
@@ -52,9 +52,7 @@ export const filterProducts = async (req, res) => {
                     ]
                 }, select: { 'password': 0, '__v': 0 }
             })
-        //console.log(productLists)
-        //return res.send("123")
-
+        
         const filterData = []
         productLists.forEach(data => {
             if (data.productId != null) {
@@ -91,7 +89,7 @@ export const orderProducts = async (req, res) => {
         const order = await Product.findById(productId)
             .populate({ path: 'productId', select: { 'createdAt': 0, 'updatedAt': 0, '__v': 0, } })
             .populate({ path: 'farmerId', select: { 'password': 0, '__v': 0 } })
-        //console.log(order)
+        
 
         if (!order) {
             return response.sendError(res, 400, 'no product found this id')

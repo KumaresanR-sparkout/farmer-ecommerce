@@ -3,7 +3,6 @@ import env from 'dotenv'
 import { sendError } from '../utils/response-util'
 env.config()
 
-//@description  Generating the token token
 export const generateToken = async (data) => {
     const generateJwtToken = await JWT.sign(
         data, process.env.SECRET, {
@@ -12,7 +11,6 @@ export const generateToken = async (data) => {
     return generateJwtToken
 }
 
-//@description  Verifying the user sended token
 export const buyerKYCToken = async (req, res, next) => {
     const token = req.header('Authorization')
     if (!token) {

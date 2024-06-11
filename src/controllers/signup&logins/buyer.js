@@ -26,8 +26,11 @@ export const buyerLogin = async (req, res) => {
         if (!existingUser) {
             return response.sendError(res, 400, "In valid email")
         }
-        console.log(existingUser)
-
+        
+        if(existingUser.status=='block'){
+            return response.sendError(res,400,'please contact admin to unblock your acess')
+        }
+        
         const decrypt = await decryptPassword(password, existingUser.password)
 
         if (!decrypt) {
@@ -78,7 +81,7 @@ export const buyerDelete = async (req, res) => {
             return response.sendError(res,400,'send valid id')
         }
         const deleteUser = await Buyer.findByIdAndDelete(userId)
-        //console.log(deleteUser)
+        
         if (!deleteUser) {
             return response.sendError(res, 400, 'you are not the user to delete the details')
         }

@@ -66,7 +66,7 @@ export const adminUpdate = async (req, res, next) => {
     }
 }
 
-//@description  validating delete user data
+
 export const adminDelete = async (req, res, next) => {
     try {
         if (Object.keys(req.query).length == 0) {

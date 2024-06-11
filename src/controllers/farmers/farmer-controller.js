@@ -23,7 +23,7 @@ export const farmerSearch=async(req,res)=>{
             ]
         },
         { 'password': 0, '__v': 0 })
-        //console.log(farmerDetails)
+        
         return response.sendSuccess(res,200,'search farmer lists',farmerDetails)
     }
     catch(error){
@@ -43,7 +43,7 @@ export const farmerDetails = async (req, res) => {
         if (!farmerDetails) {
             return response.sendError(res, 400, 'farmer not found')
         }
-        //console.log(farmerDetails)
+        
         return response.sendSuccess(res, 200, 'search farmer lists', farmerDetails)
     }
     catch (error) {

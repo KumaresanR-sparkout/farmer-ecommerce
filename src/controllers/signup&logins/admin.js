@@ -28,7 +28,7 @@ export const adminLogin = async (req, res) => {
         }
 
         const decrypt = await decryptPassword(password, existingUser.password)
-        //console.log(decrypt)
+        
         if (!decrypt) {
             return response.sendError(res, 400, "In valid password")
         }
@@ -83,7 +83,7 @@ export const adminDelete = async (req, res) => {
             return response.sendError(res,400,'send valid id')
         }
         const deleteUser = await Admin.findByIdAndDelete(userId)
-        //console.log(deleteUser)
+        
         if (!deleteUser) {
             return response.sendError(res, 400, 'you are not the user to delete the details')
         }

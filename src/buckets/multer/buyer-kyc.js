@@ -6,7 +6,7 @@ import Buyer from '../../models/buyer.models'
 const storage = multer.diskStorage({
 
     destination: function (req, file, cb) {
-        //console.log(file)
+        
         cb(null, './src/buckets/uploads/')
     },
     filename: async (req, file, cb) => {
@@ -37,7 +37,7 @@ export const updateBuyerKYC = async (req, res) => {
         if (!updatekyc) {
             return response.sendError(res, 400, 'not updated kyc')
         }
-        //console.log('file-path:', path.resolve(req.files[0].path))
+        
         return response.sendSuccess(res, 200, 'KYC status', [updatekyc])
     }
     catch (error) {

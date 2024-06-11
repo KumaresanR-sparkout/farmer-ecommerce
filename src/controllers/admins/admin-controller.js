@@ -20,7 +20,6 @@ export const adminDetails = async (req, res) => {
         if (!farmerDetails) {
             return response.sendError(res, 400, 'admins not found')
         }
-        //console.log(farmerDetails)
         return response.sendSuccess(res, 200, 'search admin lists', farmerDetails)
     }
     catch (error) {
