@@ -64,9 +64,6 @@ export const farmerUpdate = async (req, res) => {
     }
 }
 
-//@description  delete login function
-//@route        
-//@acess        protected
 export const farmerDelete = async (req, res) => {
     try {
         const { userId } = req.query

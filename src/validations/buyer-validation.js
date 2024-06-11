@@ -1,4 +1,5 @@
 import Joi from 'joi'
+import mongoose from 'mongoose'
 import { sendError } from '../utils/response-util'
 
 export const buyerRegister = async (req, res, next) => {
@@ -46,7 +47,9 @@ export const buyerUpdate = async (req, res, next) => {
         if (!userId) {
             return sendError(res, 400, 'please send userId to update')
         }
-
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return sendError(res, 400, 'send valid id')
+        }
         if (Object.keys(req.body).length == 0) {
             return sendError(res, 400, 'no body content find to update')
         }
@@ -68,13 +71,16 @@ export const buyerUpdate = async (req, res, next) => {
     }
 }
 
-//@description  validating delete user data
+
 export const buyerDelete = async (req, res, next) => {
     try {
         if (Object.keys(req.query).length == 0) {
             return sendError(res, 400, "please send userId to delete")
         }
         const { userId } = req.query
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return sendError(res, 400, 'send valid id')
+        }
         const validateDeleteSchema = Joi.object({
             userId: Joi.string().required(),
         })

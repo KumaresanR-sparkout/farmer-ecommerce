@@ -1,12 +1,15 @@
 import Admin from '../../models/admin.model'
+import mongoose from 'mongoose'
 import * as jwtToken from '../../tokens/jwt-token'
 import * as response from '../../utils/response-util'
 import { encryptPassword, decryptPassword } from '../../bcrypt/bcrypt'
 
 export const adminRegister = async (req, res) => {
     try {
+
         const encrypt = await encryptPassword(req.body.password)
         req.body.password = encrypt
+
         const user = await Admin.create({ ...req.body, ...req.role })
         return response.sendSuccess(res, 200, 'created', [user])
     }
@@ -23,11 +26,13 @@ export const adminLogin = async (req, res) => {
         if (!existingUser) {
             return response.sendError(res, 400, "In valid email")
         }
-        const decrypt = await decryptPassword(password, existingUser.password)
 
+        const decrypt = await decryptPassword(password, existingUser.password)
+        //console.log(decrypt)
         if (!decrypt) {
             return response.sendError(res, 400, "In valid password")
         }
+
         const userToken = await jwtToken.generateToken({
             "jwt": "admin"
         })
@@ -47,6 +52,12 @@ export const adminLogin = async (req, res) => {
 export const adminUpdate = async (req, res) => {
     try {
         const { userId } = req.query
+        if(!userId){
+            return response.sendError(res,400,'pass id to update')
+        }
+        if(!mongoose.Types.ObjectId.isValid(userId)){
+            return response.sendError(res,400,'send valid id')
+        }
         const updatedUser = await Admin.findByIdAndUpdate(userId, req.body, {
             new: true
         }).select('-password -__v')
@@ -61,16 +72,16 @@ export const adminUpdate = async (req, res) => {
     }
 }
 
-//@description  delete login function
-//@route        
-//@acess        protected
+
 export const adminDelete = async (req, res) => {
     try {
         const { userId } = req.query
         if (!userId) {
             return response.sendError(res, 400, 'please send userId to delete')
         }
-        
+        if(!mongoose.Types.ObjectId.isValid(userId)){
+            return response.sendError(res,400,'send valid id')
+        }
         const deleteUser = await Admin.findByIdAndDelete(userId)
         //console.log(deleteUser)
         if (!deleteUser) {

@@ -94,7 +94,7 @@ export const orderProducts = async (req, res) => {
         //console.log(order)
 
         if (!order) {
-            return response.sendError(res, 400, 'send valid productId')
+            return response.sendError(res, 400, 'no product found this id')
         }
         if (order.quantity < quantity) {
             return response.sendError(res, 400, 'requested quantity not available')

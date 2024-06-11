@@ -1,4 +1,5 @@
 import Joi from 'joi'
+import mongoose from 'mongoose'
 import { sendError } from '../utils/response-util'
 
 export const adminRegister = async (req, res, next) => {
@@ -24,7 +25,7 @@ export const adminLogin = async (req, res, next) => {
         const { email, password } = req.body
         const validateLoginSchema = Joi.object({
             email: Joi.string().email(),
-            password: Joi.string().pattern(new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/)).required()
+            password: Joi.string().pattern(new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/))
         }).with('email', 'password')
 
         const validatedSchema = await validateLoginSchema.validateAsync({ email, password })

@@ -1,4 +1,5 @@
 import Shipment from '../../models/shipment.model'
+import mongoose from 'mongoose'
 import * as response from '../../utils/response-util'
 export const createShipment = async (req, res) => {
     try {
@@ -20,6 +21,9 @@ export const deleteShipment = async (req, res) => {
             return response.sendError(res, 400, 'send id to delete the details')
         }
         const { shipmentId } = req.query
+        if (!mongoose.Types.ObjectId.isValid(shipmentId)) {
+            return response.sendError(res, 400, 'send valid id');
+        }
         const shipment = await Shipment.findByIdAndDelete(shipmentId)
         if (!shipment) {
             return response.sendError(res, 400, 'you are not the user to delete the details')

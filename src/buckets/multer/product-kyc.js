@@ -30,6 +30,9 @@ export const updateProductKyc = async (req, res) => {
         const productKYC = await Product.findByIdAndUpdate(productId, body, {
             new: true
         }).select('-createdAt -updatedAt')
+        if(!productKYC){
+            return response.sendError(res,400,'no product found to update')
+        }
         //console.log('file-path:', path.resolve(req.files[0].path))
         return response.sendSuccess(res, 200, 'product KYC status', [productKYC])
     }

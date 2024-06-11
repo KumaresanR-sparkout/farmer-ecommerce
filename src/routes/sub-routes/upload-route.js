@@ -6,8 +6,8 @@ import { updateProductKyc } from '../../buckets/multer/product-kyc'
 const router = express.Router()
 
 //@POST
-router.post('/upload/buyer',uploadBuyerKYC.any(), updateBuyerKYC)
-router.post('/upload/product', uploadProductKYC.any(), updateProductKyc)
+router.post('/buyer',uploadBuyerKYC.any(), updateBuyerKYC)
+router.post('/product', uploadProductKYC.any(), updateProductKyc)
 ///@GET
 
 //@PATCh

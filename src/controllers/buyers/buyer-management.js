@@ -1,4 +1,5 @@
 import Buyer from '../../models/buyer.models'
+import mongoose from 'mongoose'
 import { sendEmail } from '../../emails/mail-sender'
 import { KYCApproveTemplate } from '../../emails/templates/approve-kyc-template'
 import * as response from '../../utils/response-util'
@@ -8,10 +9,12 @@ export const buyerKYCProcess = async (req, res) => {
         if (Object.keys(req.query).length == 0) {
             return response.sendError(res, 400, 'send buyerId to update the KYC')
         }
+        if (!mongoose.Types.ObjectId.isValid(req.query.buyerId)) {
+            return sendError(res, 400, 'send valid id');
+        }
         if (Object.keys(req.body).length == 0) {
             return response.sendError(res, 400, 'send content to update the KYC')
         }
-
         const buyer = await Buyer.findByIdAndUpdate(req.query.buyerId, req.body, {
             new: true
         }).select('-password -__v')
@@ -54,6 +57,9 @@ export const BuyerDetails = async (req, res) => {
         if (Object.keys(req.query).length == 0) {
             return response.sendError(res, 400, 'send buyerid for details')
         }
+        if (!mongoose.Types.ObjectId.isValid(req.query.buyerId)) {
+            return sendError(res, 400, 'send valid id');
+        }
         const buyerDetails = await Buyer.findById(req.query.buyerId).select('-password -__v')
         if (!buyerDetails) {
             return response.sendError(res, 400, 'no buyer details found')
@@ -67,12 +73,12 @@ export const BuyerDetails = async (req, res) => {
 
 export const buyerSearch = async (req, res) => {
     try {
-        if (Object.keys(req.query).length == 0) {
+        if (Object.keys(req.body).length == 0) {
             return response.sendError(res, 400, 'send query to search')
         }
         const buyerDetails = await Buyer.find({
             $or: [
-                { ...req.query }
+                { ...req.body }
             ]
         },
             { 'password': 0, '__v': 0, 'idProof': 0 })

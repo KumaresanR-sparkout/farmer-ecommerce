@@ -3,7 +3,6 @@ import path from 'path'
 import mongoose from 'mongoose'
 import * as response from '../../utils/response-util'
 import Buyer from '../../models/buyer.models'
-import { json } from 'express'
 const storage = multer.diskStorage({
 
     destination: function (req, file, cb) {

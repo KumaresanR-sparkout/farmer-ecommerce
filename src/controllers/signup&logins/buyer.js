@@ -68,9 +68,6 @@ export const buyerUpdate = async (req, res) => {
     }
 }
 
-//@description  delete login function
-//@route        
-//@acess        protected
 export const buyerDelete = async (req, res) => {
     try {
         const { userId } = req.query

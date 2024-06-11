@@ -14,9 +14,12 @@ export const farmerLists = async (req, res) => {
 
 export const farmerSearch=async(req,res)=>{
     try{
+        if(Object.keys(req.body).length==0){
+            return response.sendError(res,400,'empty content should not be accepted')
+        }
         const farmerDetails=await Farmer.find({
             $or:[
-                {...req.query}
+                {...req.body}
             ]
         },
         { 'password': 0, '__v': 0 })
@@ -38,7 +41,7 @@ export const farmerDetails = async (req, res) => {
         }
         const farmerDetails = await Farmer.findById(req.query.userId).select('-password -__v')
         if (!farmerDetails) {
-            return response.sendError(res, 400, 'farmers not found')
+            return response.sendError(res, 400, 'farmer not found')
         }
         //console.log(farmerDetails)
         return response.sendSuccess(res, 200, 'search farmer lists', farmerDetails)

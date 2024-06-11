@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import Product from '../../models/product.model'
+import { sendEmail } from '../../emails/mail-sender'
+import  {productApproveTemplate} from '../../emails/templates/product-approve-template'
 import Order from '../../models/order.model'
 import * as response from '../../utils/response-util'
 
@@ -26,12 +28,13 @@ export const listProduct = async (req, res) => {
         else {
             categoryFilter.categoryId = categoryId
         }
+        const productRegex = product ? product : ''
         //console.log(categoryFilter)
         const productList = await Product.find(categoryFilter, { 'createdAt': 0, 'updatedAt': 0, '__v': 0 })
             .populate({
                 path: 'productId', match: {
                     $or: [
-                        { product: { $regex: product, $options: 'i' } },
+                        { product: { $regex: productRegex, $options: 'i' } },
                     ]
                 }, select: { '__v': 0, 'createdAt': 0, 'updatedAt': 0 },
                 populate: {
@@ -56,7 +59,7 @@ export const productDetails = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(req.query.productId)) {
             return response.sendError(res, 400, 'send valid id')
         }
-        const productDetails = await Product.findOne(req.query, { 'createdAt': 0, 'updatedAt': 0, '__v': 0 })
+        const productDetails = await Product.findById(req.query.productId)
             .populate({
                 path: 'productId', select: { '__v': 0, 'createdAt': 0, 'updatedAt': 0 },
                 populate: {
@@ -130,14 +133,15 @@ export const updateProductKyc = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(req.query.productId)) {
             return response.sendError(res, 400, 'send valid id')
         }
-        if(Object.keys(req.body).length==0){
+        if (Object.keys(req.body).length == 0) {
             return response.sendError(res, 400, 'empty body should not be accepted')
         }
-        const updateKyc=await Product.findByIdAndUpdate(req.query.productId,req.body,{new:true})
-        if(!updateKyc){
-            return response.sendError(res,400,'no product found to update')
+        const updateKyc = await Product.findByIdAndUpdate(req.query.productId, req.body, { new: true })
+        if (!updateKyc) {
+            return response.sendError(res, 400, 'no product found to update')
         }
-        return response.sendSuccess(res,200,'updated product kyc',updateKyc)
+        await sendEmail('kumare002345k@gmail.com','Product Approval',productApproveTemplate())
+        return response.sendSuccess(res, 200, 'updated product kyc', updateKyc)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)
