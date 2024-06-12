@@ -1,17 +1,17 @@
 import express from 'express'
-import * as adminValidation from '../../validations/admin-validation'
 import * as adminController from '../../controllers/signup&logins/admin'
+import * as adminCategory from '../../controllers/admins/admin-category'
+import * as adminProduct from '../../controllers/admins/admin-product'
 import * as admins from '../../controllers/admins/admin-controller'
 import * as buyerController from '../../controllers/signup&logins/buyer'
 import * as buyerManagement from '../../controllers/buyers/buyer-management'
-import * as adminCategory from '../../controllers/admins/admin-category'
-import * as adminCategoryValidation from '../../validations/admin-category-validation'
-import * as adminProductValidation from '../../validations/admin-product-validation'
-import * as adminProduct from '../../controllers/admins/admin-product'
 import * as farmerController from '../../controllers/signup&logins/farmer'
 import * as farmers from '../../controllers/farmers/farmer-controller'
 import * as shipment from '../../controllers/shipment/shipment-admin'
 import * as validation from '../../validations/query-validation'
+import * as adminValidation from '../../validations/admin-validation'
+import * as adminCategoryValidation from '../../validations/admin-category-validation'
+import * as adminProductValidation from '../../validations/admin-product-validation'
 import * as jwt from '../../tokens/jwt-token'
 import { updateProductKyc } from '../../controllers/products/product-controller'
 const router = express.Router()
@@ -24,6 +24,7 @@ router.post('/shipment', jwt.adminToken, shipment.createShipment)
 
 router.get('/', adminValidation.adminLogin, adminController.adminLogin)
 router.get('/lists', jwt.adminToken, admins.adminLists)
+router.get('/filter', jwt.adminToken, admins.topSellingProduct)
 router.get('/details/:id', validation.idValidation, jwt.adminToken, admins.adminDetails)
 router.get('/product/:id', jwt.adminToken, validation.idValidation, adminProduct.getProductDetails)
 router.get('/products/details', jwt.adminToken, adminProduct.productDetails)
