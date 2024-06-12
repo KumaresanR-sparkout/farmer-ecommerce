@@ -1,6 +1,5 @@
 import multer from 'multer'
 import path from 'path'
-import mongoose from 'mongoose'
 import * as response from '../../utils/response-util'
 import Product from '../../models/product.model'
 const storage = multer.diskStorage({
@@ -16,25 +15,18 @@ export default upload
 
 export const updateProductKyc = async (req, res) => {
     try {
-        const productId = req.query.productId
-        if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'send id to update product')
-        }
-        if (!mongoose.Types.ObjectId.isValid(req.query.productId)) {
-            return response.sendError(res, 400, 'send valid id')
-        }
         const imageLocation = path.resolve(req.files[0].path)
         const body = {
             url: imageLocation
         }
-        const productKYC = await Product.findByIdAndUpdate(productId, body, {
+        const productKYC = await Product.findByIdAndUpdate(req.params.id, body, {
             new: true
         }).select('-createdAt -updatedAt')
-        if(!productKYC){
-            return response.sendError(res,400,'no product found to update')
+        if (!productKYC) {
+            return response.sendError(res, 400, 'no product found to update')
         }
-        
-        return response.sendSuccess(res, 200, 'product KYC status', [productKYC])
+
+        return response.sendSuccess(res, 200, 'product KYC status', productKYC)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)

@@ -23,10 +23,13 @@ const AdminSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'subadmin'],
-        trim: true,
-        required: true
+        default: 'admin',
     },
-})
+},
+    {
+        timestamps: true,
+        versionKey: false
+    }
+)
 
 export default mongoose.model('Admin', AdminSchema)

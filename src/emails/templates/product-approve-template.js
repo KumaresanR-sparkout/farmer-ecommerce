@@ -1,4 +1,4 @@
-export const productApproveTemplate=()=>{
+export const productApproveTemplate = () => {
     const template = `
 <!DOCTYPE html>
 <html lang="en">
@@ -57,5 +57,5 @@ export const productApproveTemplate=()=>{
 </body>
 </html>
 `
-return template
+    return template
 }

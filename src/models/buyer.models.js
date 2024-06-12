@@ -32,21 +32,25 @@ const BuyerSchema = new mongoose.Schema({
         default: 'buyer'
     },
     status: {
-        type: String,
-        default: 'unblock',
-        enum: ['unblock', 'block']
+        type: Boolean,
+        default: true,
+
     },
     kyc: {
         type: String,
         default: 'pending',
         enum: ['approved', 'rejected', 'pending']
     },
-    idProof: {
+    id_proof: {
         type: 'string',
-        trim: true,
-        default: null
+        trim: true
     }
-})
+},
+    {
+        timestamps: true,
+        versionKey: false
+    }
+)
 
 BuyerSchema.post('save', async (buyer, next) => {
 

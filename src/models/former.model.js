@@ -30,6 +30,10 @@ const FarmerSchema = new mongoose.Schema({
         type: String,
         default: 'farmer'
     }
-})
+},
+    {
+        timestamps: true,
+        versionKey: false
+    })
 
 export default mongoose.model('Farmer', FarmerSchema)

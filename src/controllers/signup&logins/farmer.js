@@ -10,7 +10,7 @@ export const farmerRegister = async (req, res) => {
         req.body.password = encrypt
 
         const user = await Farmer.create(req.body)
-        return response.sendSuccess(res, 200, 'created', [user])
+        return response.sendSuccess(res, 200, 'created', user)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)
@@ -32,14 +32,15 @@ export const farmerLogin = async (req, res) => {
             return response.sendError(res, 400, "In valid password")
         }
         const userToken = await jwtToken.generateToken({
-            "jwt": "farmer"
+            "id": existingUser._id,
+            "role": existingUser.role
         })
         const sendUserDetails = {
             "userId": existingUser._id,
             "email": existingUser.email,
             "token": userToken
         }
-        return response.sendSuccess(res, 200, "successfully login", [sendUserDetails])
+        return response.sendSuccess(res, 200, "successfully login", sendUserDetails)
 
     }
     catch (error) {
@@ -49,15 +50,15 @@ export const farmerLogin = async (req, res) => {
 
 export const farmerUpdate = async (req, res) => {
     try {
-        const { userId } = req.query
-        const updatedUser = await Farmer.findByIdAndUpdate(userId, req.body, {
+
+        const updatedUser = await Farmer.findByIdAndUpdate(req.params.id, req.body, {
             new: true
-        }).select('-password -__v')
+        }).select('-password')
 
         if (!updatedUser) {
             return response.sendError(res, 400, 'you are not the user to update the details')
         }
-        return response.sendSuccess(res, 200, 'updated your details', [updatedUser])
+        return response.sendSuccess(res, 200, 'updated your details', updatedUser)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)
@@ -66,16 +67,12 @@ export const farmerUpdate = async (req, res) => {
 
 export const farmerDelete = async (req, res) => {
     try {
-        const { userId } = req.query
-        if (!userId) {
-            return response.sendError(res, 400, 'please send userId to delete')
-        }
-        const deleteUser = await Farmer.findByIdAndDelete(userId)
-        
+
+        const deleteUser = await Farmer.findByIdAndDelete(req.params.id)
         if (!deleteUser) {
             return response.sendError(res, 400, 'you are not the user to delete the details')
         }
-        return response.sendSuccess(res, 200, 'deleted your details', [deleteUser])
+        return response.sendSuccess(res, 200, 'deleted your details', deleteUser)
 
     }
     catch (error) {

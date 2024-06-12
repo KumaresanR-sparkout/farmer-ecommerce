@@ -1,4 +1,3 @@
-import { required } from "joi"
 import mongoose from "mongoose"
 
 const ShipmentSchema = mongoose.Schema({
@@ -14,7 +13,8 @@ const ShipmentSchema = mongoose.Schema({
     }
 },
     {
-        timestamps: true
+        timestamps: true,
+        versionKey: false
     }
 )
 

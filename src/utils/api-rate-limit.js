@@ -6,7 +6,7 @@ export const apiRateLimit = () => {
         limit: 20,
         standardHeaders: 'draft-7',
         legacyHeaders: false,
-        message:'server overloaded due to many request from single-user'
+        message: 'server overloaded due to many request from single-user'
     })
     return limiter
 }

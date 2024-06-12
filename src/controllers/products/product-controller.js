@@ -1,48 +1,38 @@
-import mongoose from 'mongoose'
 import Product from '../../models/product.model'
-import { sendEmail } from '../../emails/mail-sender'
-import  {productApproveTemplate} from '../../emails/templates/product-approve-template'
 import Order from '../../models/order.model'
 import * as response from '../../utils/response-util'
+import { sendEmail } from '../../emails/mail-sender'
+import { productApproveTemplate } from '../../emails/templates/product-approve-template'
 
 export const createProduct = async (req, res) => {
     try {
 
         const product = await Product.create(req.body)
-        return response.sendSuccess(res, 200, 'product created', [product])
+        return response.sendSuccess(res, 200, 'product created', product)
     } catch (error) {
         return response.sendError(res, 500, error.message)
     }
 }
 export const listProduct = async (req, res) => {
     try {
-        
-        const { categoryId, product } = req.body
-        if (categoryId && (!mongoose.Types.ObjectId.isValid(categoryId))) {
-            return response.sendError(res, 400, 'send valid id')
+        if (Object.keys(req.body).length == 0) {
+            return response.sendError(res, 400, 'empty content should not accepted')
         }
-        let categoryFilter = {}
-        if (!categoryId) {
-            categoryFilter = {}
-        }
-        else {
-            categoryFilter.categoryId = categoryId
-        }
-        const productRegex = product ? product : ''
-        
-        const productList = await Product.find(categoryFilter, { 'createdAt': 0, 'updatedAt': 0, '__v': 0 })
+
+        const productList = await Product.find({}, { 'createdAt': 0, 'updatedAt': 0 })
             .populate({
-                path: 'productId', match: {
-                    $or: [
-                        { product: { $regex: productRegex, $options: 'i' } },
-                    ]
-                }, select: { '__v': 0, 'createdAt': 0, 'updatedAt': 0 },
-                populate: {
-                    path: 'category', select: { '__v': 0, 'createdAt': 0, 'updatedAt': 0 }
-                }
+                path: 'product_id', select: { 'createdAt': 0, 'updatedAt': 0 },
+            })
+            .populate({
+                path: 'category_id', select: { 'createdAt': 0, 'updatedAt': 0 },
             })
 
-        const filterData = productList.filter(data => data.productId != null)
+        const regex = new RegExp(req.body.search, 'g')
+        const filterData = productList.filter(data => {
+            if (data.category_id.category.match(regex) || data.product_id.product.match(regex)) {
+                return data
+            }
+        })
 
         return response.sendSuccess(res, 200, 'category list', filterData)
     } catch (error) {
@@ -53,23 +43,17 @@ export const listProduct = async (req, res) => {
 export const productDetails = async (req, res) => {
     try {
 
-        if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'pass id to get product details')
-        }
-        if (!mongoose.Types.ObjectId.isValid(req.query.productId)) {
-            return response.sendError(res, 400, 'send valid id')
-        }
-        const productDetails = await Product.findById(req.query.productId)
+        const productDetails = await Product.findById(req.params.id)
             .populate({
-                path: 'productId', select: { '__v': 0, 'createdAt': 0, 'updatedAt': 0 },
+                path: 'product_id', select: { 'createdAt': 0, 'updatedAt': 0 },
                 populate: {
-                    path: 'category', select: { '__v': 0, 'createdAt': 0, 'updatedAt': 0 }
+                    path: 'category', select: { 'createdAt': 0, 'updatedAt': 0 }
                 }
             })
         if (!productDetails) {
             return response.sendError(res, 400, 'no product found by id')
         }
-        return response.sendSuccess(res, 200, 'product details', [productDetails])
+        return response.sendSuccess(res, 200, 'product details', productDetails)
     } catch (error) {
         return response.sendError(res, 500, error.message)
     }
@@ -77,13 +61,13 @@ export const productDetails = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
-        const product = await Product.findByIdAndUpdate(req.query.productId, req.body, {
+        const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
             new: true
         })
         if (!product) {
             return response.sendError(res, 400, 'no product find to update')
         }
-        return response.sendSuccess(res, 200, 'updated product', [product])
+        return response.sendSuccess(res, 200, 'updated product', product)
     } catch (error) {
         return response.sendError(res, 500, error.message)
     }
@@ -92,17 +76,11 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
     try {
 
-        if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'send id to delete')
-        }
-        if (!mongoose.Schema.Types.ObjectId.isValid(req.query.productId)) {
-            return response.sendError(res, 400, 'send valid id')
-        }
-        const deleteProduct = await Product.findByIdAndDelete(req.query.productId)
+        const deleteProduct = await Product.findByIdAndDelete(req.params.id)
         if (!deleteProduct) {
-            return response.sendError(res, 400, 'no category find to delete')
+            return response.sendError(res, 400, 'no product find to delete')
         }
-        return response.sendSuccess(res, 200, 'deleted category', [deleteProduct])
+        return response.sendSuccess(res, 200, 'deleted category', deleteProduct)
     } catch (error) {
         return response.sendError(res, 500, error.message)
     }
@@ -110,13 +88,9 @@ export const deleteProduct = async (req, res) => {
 
 export const farmerProductOrder = async (req, res) => {
     try {
-        if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'send id to get details')
-        }
-        if (!mongoose.Types.ObjectId.isValid(req.query.farmerId)) {
-            return response.sendError(res, 400, 'send valid id')
-        }
-        const farmerOrder = await Order.find({ farmerId: req.query.farmerId }).populate({ path: 'productId' })
+
+        const farmerOrder = await Order.find({ farmer_id: req.params.id }, { 'createdAt': 0, 'updatedAt': 0 })
+            .populate({ path: 'product_id', select: { 'createdAt': 0, 'updatedAt': 0 } })
         return response.sendSuccess(res, 200, 'farmer order products', farmerOrder)
     }
     catch (error) {
@@ -126,21 +100,15 @@ export const farmerProductOrder = async (req, res) => {
 
 export const updateProductKyc = async (req, res) => {
     try {
-        if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'send id to get details')
-        }
-        
-        if (!mongoose.Types.ObjectId.isValid(req.query.productId)) {
-            return response.sendError(res, 400, 'send valid id')
-        }
+
         if (Object.keys(req.body).length == 0) {
             return response.sendError(res, 400, 'empty body should not be accepted')
         }
-        const updateKyc = await Product.findByIdAndUpdate(req.query.productId, req.body, { new: true })
+        const updateKyc = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true })
         if (!updateKyc) {
             return response.sendError(res, 400, 'no product found to update')
         }
-        await sendEmail('kumare002345k@gmail.com','Product Approval',productApproveTemplate())
+        await sendEmail('kumare002345k@gmail.com', 'Product Approval', productApproveTemplate())
         return response.sendSuccess(res, 200, 'updated product kyc', updateKyc)
     }
     catch (error) {

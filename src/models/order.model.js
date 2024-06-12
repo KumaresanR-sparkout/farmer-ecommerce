@@ -1,27 +1,42 @@
-import { required } from "joi"
 import mongoose from "mongoose"
 
 const OrderSchema = new mongoose.Schema({
-    buyerId: {
+    buyer_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Buyer'
+        ref: 'Buyer',
+        required: true
     },
-    farmerId: {
+    buyer_email: {
+        type: String,
+        required: true
+    },
+    farmer_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Farmer'
+        ref: 'Farmer',
+        required: true
     },
-    productId: {
+    category_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product'
+        ref: 'AdminCategory',
+        required: true
     },
-    productName:{
-        type:String,
-        required:true
+    product_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true
     },
-    quantity:{
-        type:Number,
-        required:true
+    product_name: {
+        type: String,
+        required: true
+    },
+    quantity: {
+        type: Number,
+        required: true
     }
-})
+},
+    {
+        timestamps: true,
+        versionKey: false
+    })
 
 export default mongoose.model('Order', OrderSchema)

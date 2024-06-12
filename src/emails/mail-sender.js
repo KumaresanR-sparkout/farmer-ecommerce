@@ -3,7 +3,7 @@ import env from 'dotenv'
 env.config()
 
 export const sendEmail = async (toEmail, subject, template) => {
-    
+
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -20,7 +20,7 @@ export const sendEmail = async (toEmail, subject, template) => {
     }
 
     const emailResponse = await transporter.sendMail(maildetails)
-    
+
     if (!emailResponse) {
         console.log('Error in email sending')
     }

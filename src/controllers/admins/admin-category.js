@@ -1,4 +1,3 @@
-import mongoose from 'mongoose'
 import AdminCategory from '../../models/admin-category.model'
 import AdminProduct from '../../models/admin-product.model'
 import Product from '../../models/product.model'
@@ -16,11 +15,11 @@ export const createCategory = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
     try {
-        const category = await AdminCategory.findByIdAndUpdate(req.query.categoryId, req.body, {
+        const category = await AdminCategory.findByIdAndUpdate(req.params.id, req.body, {
             new: true
         })
-        if(!category){
-            return response.sendError(res,400,'no category found to update')
+        if (!category) {
+            return response.sendError(res, 400, 'no category found to update')
         }
         return response.sendSuccess(res, 200, 'category has updated', category)
     }
@@ -31,25 +30,19 @@ export const updateCategory = async (req, res) => {
 
 export const deleteCategory = async (req, res) => {
     try {
-        if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'send id to delete')
-        }
-        if (!mongoose.Types.ObjectId.isValid(req.query.categoryId)) {
-            return response.sendError(res, 400, 'send valid id')
-        }
-        const categoryId = req.query.categoryId
-        const adminCategory = await AdminCategory.findByIdAndDelete(req.query.categoryId)
+
+        const adminCategory = await AdminCategory.findByIdAndDelete(req.params.id)
         if (!adminCategory) {
             return response.sendError(res, 400, 'no category found to delete')
         }
-        const adminProduct = await AdminProduct.deleteMany({ category: categoryId })
+        const adminProduct = await AdminProduct.deleteMany({ category: req.params.id })
 
         if (adminProduct.deletedCount == 0) {
             return response.sendError(res, 400, 'no admin product found to delete')
 
         }
-        const product = await Product.deleteMany({ categoryId: req.query.categoryId })
-        
+        await Product.deleteMany({ category_id: req.params.id })
+
         return response.sendSuccess(res, 200, 'category and releated things deleted', [])
     }
     catch (error) {
@@ -69,17 +62,11 @@ export const listCategory = async (req, res) => {
 
 export const categoryDetails = async (req, res) => {
     try {
-        if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'send id to get details')
-        }
-        if (!mongoose.Types.ObjectId.isValid(req.query.categoryId)) {
-            return response.sendError(res, 400, 'send valid id')
-        }
-        const category = await AdminCategory.findById(req.query.categoryId)
+        const category = await AdminCategory.findById(req.params.id)
         if (!category) {
             return response.sendError(res, 400, 'no category found')
         }
-        return response.sendSuccess(res, 200, 'category Details', [category])
+        return response.sendSuccess(res, 200, 'category Details', category)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)

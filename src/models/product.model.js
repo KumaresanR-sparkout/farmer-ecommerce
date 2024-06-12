@@ -1,4 +1,3 @@
-import { required } from "joi"
 import mongoose from "mongoose"
 
 const ProductSchema = new mongoose.Schema({
@@ -10,28 +9,33 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    categoryId: {
+    category_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'AdminCategory'
+        ref: 'AdminCategory',
+        required: true
     },
-    productId: {
+    product_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'AdminProduct'
+        ref: 'AdminProduct',
+        required: true
     },
-    farmerId: {
+    farmer_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Farmer'
+        ref: 'Farmer',
+        required: true
     },
     status: {
         type: String,
-        enum: ['approved', 'rejected'],
-        default: null
+        enum: ['approved', 'rejected']
     },
     url: {
         type: String,
-        trim: true,
-        default: null
+        trim: true
     }
-})
+},
+    {
+        timestamps: true,
+        versionKey: false
+    })
 
 export default mongoose.model('Product', ProductSchema)

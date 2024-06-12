@@ -7,11 +7,13 @@ const schema = new mongoose.Schema({
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'AdminCategory'
+        ref: 'AdminCategory',
+        required: true
     }
 },
     {
-        timestamps: true
+        timestamps: true,
+        versionKey: false
     })
 
 export default mongoose.model('AdminProduct', schema)

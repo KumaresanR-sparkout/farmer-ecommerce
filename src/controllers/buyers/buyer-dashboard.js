@@ -3,7 +3,7 @@ import Order from '../../models/order.model'
 import { sendEmail } from '../../emails/mail-sender'
 import { buyerTemplate } from '../../emails/templates/buyer-template'
 import { farmerTemplate } from '../../emails/templates/farmer-template'
-import { availableCountry } from '../middlewares/shipment-country'
+import { availableCountry } from '../utils/shipment-country'
 import * as response from '../../utils/response-util'
 import mongoose from 'mongoose'
 
@@ -12,20 +12,16 @@ export const filterProducts = async (req, res) => {
         if (Object.keys(req.body).length == 0) {
             return response.sendError(res, 400, 'send content to get the details')
         }
-
         let categoryId = req.body.categoryId
         let farmerName = req.body.farmerName
         let productName = req.body.productName
-        
+
         if (categoryId && (!mongoose.Types.ObjectId.isValid(categoryId))) {
             return response.sendError(res, 400, 'send valid id')
         }
         let categoryFilter = {}
-        if (!categoryId) {
-            categoryFilter = {}
-        }
-        else {
-            categoryFilter.categoryId = categoryId
+        if (categoryId) {
+            categoryFilter.category_id = categoryId
         }
         let productRegex = productName
         let farmerRegex = farmerName
@@ -38,34 +34,33 @@ export const filterProducts = async (req, res) => {
 
         const productLists = await Product.find(categoryFilter)
             .populate({
-                path: 'productId', match: {
+                path: 'product_id', match: {
                     $or: [
                         { product: { $regex: productRegex, $options: 'i' } },
                     ]
                 },
-                select: { 'createdAt': 0, 'updatedAt': 0, '__v': 0, }
+                select: { 'createdAt': 0, 'updatedAt': 0 }
             })
             .populate({
-                path: 'farmerId', match: {
+                path: 'farmer_id', match: {
                     $or: [
                         { name: { $regex: farmerRegex, $options: 'i' } },
                     ]
-                }, select: { 'password': 0, '__v': 0 }
+                }, select: { 'password': 0 }
             })
-        
+
         const filterData = []
         productLists.forEach(data => {
-            if (data.productId != null) {
+            if (data.product_id != null) {
                 filterData.push({
-                    farmerName: data.farmerId.name,
-                    country: data.farmerId.country,
-                    productname: data.productId.product
+                    farmerName: data.farmer_id.name,
+                    country: data.farmer_id.country,
+                    productname: data.product_id.product
                 })
             }
 
         })
 
-        console.log(filterData)
         return response.sendSuccess(res, 200, 'filtered lists', filterData)
     }
     catch (error) {
@@ -75,21 +70,14 @@ export const filterProducts = async (req, res) => {
 
 export const orderProducts = async (req, res) => {
     try {
-        if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'send productId to order the products')
-        }
-        const productId = req.query.productId
-        if (!mongoose.Types.ObjectId.isValid(productId)) {
-            return response.sendError(res, 400, 'send valid id')
-        }
+
         if (Object.keys(req.body).length == 0) {
             return response.sendError(res, 400, 'send content to order product')
         }
         const { buyerName, buyerId, buyerEmail, buyerCountry, quantity } = req.body
-        const order = await Product.findById(productId)
-            .populate({ path: 'productId', select: { 'createdAt': 0, 'updatedAt': 0, '__v': 0, } })
-            .populate({ path: 'farmerId', select: { 'password': 0, '__v': 0 } })
-        
+        const order = await Product.findById(req.params.id)
+            .populate({ path: 'product_id', select: { 'createdAt': 0, 'updatedAt': 0 } })
+            .populate({ path: 'farmer_id', select: { 'password': 0 } })
 
         if (!order) {
             return response.sendError(res, 400, 'no product found this id')
@@ -97,14 +85,14 @@ export const orderProducts = async (req, res) => {
         if (order.quantity < quantity) {
             return response.sendError(res, 400, 'requested quantity not available')
         }
-        const shipment = await availableCountry(buyerCountry, order.farmerId.country)
+        const shipment = await availableCountry(buyerCountry, order.farmer_id.country)
         if (!shipment) {
             return response.sendError(res, 400, 'shipment is not available your country')
         }
         order.quantity -= quantity
         await order.save()
         const data = {
-            name: order.productId.product,
+            name: order.product_id.product,
             price: order.price,
             quantity: quantity,
             totalPrice: order.price * quantity
@@ -112,21 +100,23 @@ export const orderProducts = async (req, res) => {
         }
 
         await Order.create({
-            buyerId: buyerId,
-            farmerId: order.farmerId._id,
-            productId: productId,
-            productName: order.productId.product,
+            buyer_id: buyerId,
+            buyer_email: buyerEmail,
+            farmer_id: order.farmer_id._id,
+            category_id: order.category_id,
+            product_id: req.params.id,
+            product_name: order.product_id.product,
             quantity: data.quantity
         })
 
-        await sendEmail(buyerEmail, 'your order has been confirmed', buyerTemplate({ buyer: buyerName, ...data }))
-        await sendEmail(order.farmerId.email, 'product has been ordered', farmerTemplate({
+        sendEmail(buyerEmail, 'your order has been confirmed', buyerTemplate({ buyer: buyerName, ...data }))
+        sendEmail(order.farmer_id.email, 'product has been ordered', farmerTemplate({
             buyerName: buyerName,
             productName: data.name,
             quantity: data.quantity,
             totalPrice: data.price * data.quantity
         }))
-        return response.sendSuccess(res, 200, 'order details', [data])
+        return response.sendSuccess(res, 200, 'order details', data)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)
@@ -136,16 +126,18 @@ export const orderProducts = async (req, res) => {
 export const productDetails = async (req, res) => {
     try {
         const product = await Product.find()
-        .populate({ path: 'productId', select: { 'createdAt': 0, 'updatedAt': 0, '__v': 0, },
-        populate:{
-            path:'category'
-        } })
-        
+            .populate({
+                path: 'product_id', select: { 'createdAt': 0, 'updatedAt': 0 },
+                populate: {
+                    path: 'category'
+                }
+            })
+
         const filterProdct = []
         product.forEach(data => {
             filterProdct.push({
-                productName: data.productId.product,
-                category: data.productId.category.category,
+                productName: data.product_id.product,
+                category: data.product_id.category.category,
                 quantity: data.quantity,
                 price: data.price
             })
@@ -157,19 +149,13 @@ export const productDetails = async (req, res) => {
     }
 }
 
-export const buyerOrders=async(req,res)=>{
-    try{
-        if(Object.keys(req.query).length==0){
-            return response.sendError(res,400,'send id to access')
-        }
-        if(!mongoose.Types.ObjectId.isValid(req.query.buyerId)){
-            return response.sendError(res,400,'send valid id')
-        }
-        const buyerOrder=await Order.find({buyerId:req.query.buyerId})
-        .populate({path:'productId'})
-        return response.sendSuccess(res,200,'buyer order lists',buyerOrder)
+export const buyerOrders = async (req, res) => {
+    try {
+        const buyerOrder = await Order.find({ buyer_id: req.params.id })
+            .populate({ path: 'product_id' })
+        return response.sendSuccess(res, 200, 'buyer order lists', buyerOrder)
     }
-    catch(error){
+    catch (error) {
         return response.sendError(res, 500, error.message)
     }
 }

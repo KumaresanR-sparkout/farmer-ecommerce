@@ -3,6 +3,7 @@ import * as farmerValidation from '../../validations/farmer-validation'
 import * as farmerController from '../../controllers/signup&logins/farmer'
 import * as product from '../../controllers/products/product-controller'
 import * as validations from '../../validations/product-validation'
+import * as validation from '../../validations/query-validation'
 import * as jwt from '../../tokens/jwt-token'
 const router = express.Router()
 
@@ -13,15 +14,15 @@ router.post('/product', jwt.farmerToken, validations.createProduct, product.crea
 //GET
 router.get('/', farmerValidation.farmerLogin, farmerController.farmerLogin)
 router.get('/product/lists', jwt.farmerToken, product.listProduct)
-router.get('/product/details', jwt.farmerToken, product.productDetails)
-router.get('/product/order',jwt.farmerToken,product.farmerProductOrder)
+router.get('/product/details/:id', jwt.farmerToken, validation.idValidation, product.productDetails)
+router.get('/product/order/:id', jwt.farmerToken, validation.idValidation, product.farmerProductOrder)
 //@PUT
 
 //@PATCH
-router.patch('/', jwt.farmerToken, farmerValidation.farmerUpdate, farmerController.farmerUpdate)
-router.patch('/product', jwt.farmerToken, validations.updateProduct, product.updateProduct)
+router.patch('/:id', jwt.farmerToken, validation.idValidation, farmerValidation.farmerUpdate, farmerController.farmerUpdate)
+router.patch('/product/:id', jwt.farmerToken, validation.idValidation, validations.updateProduct, product.updateProduct)
 //@DELETE
-router.delete('/', jwt.farmerToken, farmerValidation.farmerDelete, farmerController.farmerDelete)
-router.delete('/product', jwt.farmerToken, product.deleteProduct)
+router.delete('/:id', jwt.farmerToken, validation.idValidation, farmerController.farmerDelete)
+router.delete('/product/:id', jwt.farmerToken, validation.idValidation, product.deleteProduct)
 
 export default router

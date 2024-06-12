@@ -1,12 +1,11 @@
 import AdminProduct from '../../models/admin-product.model'
 import Product from '../../models/product.model'
-import mongoose from 'mongoose'
 import * as response from '../../utils/response-util'
 
 export const createProduct = async (req, res) => {
     try {
         const product = await AdminProduct.create(req.body)
-        return response.sendSuccess(res, 200, 'category has created', [product])
+        return response.sendSuccess(res, 200, 'category has created', product)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)
@@ -15,10 +14,13 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
-        const product = await AdminProduct.findByIdAndUpdate(req.query.productId, req.body, {
+        const product = await AdminProduct.findByIdAndUpdate(req.params.id, req.body, {
             new: true
         })
-        return response.sendSuccess(res, 200, 'product has updated', [product])
+        if (!product) {
+            return response.sendError(res, 400, 'no product found to update')
+        }
+        return response.sendSuccess(res, 200, 'product has updated', product)
     }
     catch (error) {
         return response.sendError(res, 500, error.message)
@@ -26,17 +28,12 @@ export const updateProduct = async (req, res) => {
 }
 export const deleteProduct = async (req, res) => {
     try {
-        if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'send id to delete')
-        }
-        if (!mongoose.Types.ObjectId.isValid(req.query.productId)) {
-            return response.sendError(res, 400, 'send valid id')
-        }
-        const adminProduct = await AdminProduct.findByIdAndDelete(req.query.productId)
+
+        const adminProduct = await AdminProduct.findByIdAndDelete(req.params.id)
         if (!adminProduct) {
             return response.sendError(res, 400, 'no product found to delete')
         }
-        const product = await Product.deleteMany({ productId: req.query.productId })
+        await Product.deleteMany({ product_id: req.params.id })
 
         return response.sendSuccess(res, 200, 'product and releated things deleted', [])
     }
@@ -58,13 +55,8 @@ export const productDetails = async (req, res) => {
 }
 export const getProductDetails = async (req, res) => {
     try {
-        if (Object.keys(req.query).length == 0) {
-            return response.sendError(res, 400, 'send id to get details')
-        }
-        if (!mongoose.Types.ObjectId.isValid(req.query.productId)) {
-            return response.sendError(res, 400, 'send valid id')
-        }
-        const product = await AdminProduct.findById(req.query.productId)
+
+        const product = await AdminProduct.findById(req.params.id)
             .populate({ path: 'category' })
         if (!product) {
             return response.sendError(res, 400, 'no product found')

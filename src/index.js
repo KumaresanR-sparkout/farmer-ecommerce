@@ -3,9 +3,11 @@ import env from 'dotenv'
 import helmet from 'helmet'
 import cluster from 'cluster'
 import os from 'os'
-import { dbConnection } from './config/dbConfig'
-import { apiRateLimit } from './middlewares/api-rate-limit'
 import mainRouter from './routes/main-routes/common-route'
+import { dbConnection } from './config/dbConfig'
+import { apiRateLimit } from './utils/api-rate-limit'
+import {sendNotification} from '../src/cron/schedule.cron'
+
 env.config()
 const CPUS = os.cpus().length
 const app = express()
@@ -13,7 +15,9 @@ const app = express()
 app.use(express.json())
 app.use(helmet())
 app.use(apiRateLimit())
+
 dbConnection()
+sendNotification()
 
 app.use('/api/ecom/v1', mainRouter)
 
@@ -32,3 +36,7 @@ else {
         console.log(`server started at port:${process.env.PORT}`)
     })
 }
+
+app.listen(process.env.PORT, () => {
+    console.log(`server started at port:${process.env.PORT}`)
+})

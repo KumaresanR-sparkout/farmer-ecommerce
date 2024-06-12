@@ -1,4 +1,3 @@
-import mongoose from "mongoose"
 import Joi from 'joi'
 import { sendError } from "../utils/response-util"
 
@@ -9,9 +8,9 @@ export const createProduct = async (req, res, next) => {
         }
         const schema = Joi.object({
             product: Joi.string().required(),
-            category: Joi.string().required()
+            category: Joi.string().hex().length(24).required()
         })
-        const validatedSchema = await schema.validateAsync(req.body)
+        await schema.validateAsync(req.body)
         next()
     }
     catch (error) {
@@ -21,21 +20,15 @@ export const createProduct = async (req, res, next) => {
 
 export const updateProduct = async (req, res, next) => {
     try {
-        if (Object.keys(req.query).length == 0) {
-            return sendError(res, 400, 'send id to update the category')
-        }
-    
-        if (!mongoose.Types.ObjectId.isValid(req.query.productId)) {
-            return sendError(res, 400, 'send valid id');
-        }
+
         if (Object.keys(req.body).length == 0) {
             return sendError(res, 400, 'Empty content should not be accepted')
         }
         const schema = Joi.object({
             product: Joi.string(),
-            category: Joi.string()
+            category: Joi.string().hex().length(24)
         })
-        const validatedSchema = await schema.validateAsync(req.body)
+        await schema.validateAsync(req.body)
         next()
     }
     catch (error) {

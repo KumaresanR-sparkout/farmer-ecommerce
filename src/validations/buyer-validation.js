@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import mongoose from 'mongoose'
 import { sendError } from '../utils/response-util'
 
 export const buyerRegister = async (req, res, next) => {
@@ -12,9 +11,9 @@ export const buyerRegister = async (req, res, next) => {
             email: Joi.string().email(),
             password: Joi.string().pattern(new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/)).required(),
             contact: Joi.string().required(),
-            country:Joi.string().required()
+            country: Joi.string().required()
         }).with('name', 'email')
-        const validatedSchema = await validateUserSchema.validateAsync(req.body)
+        await validateUserSchema.validateAsync(req.body)
         next()
     }
     catch (error) {
@@ -33,7 +32,7 @@ export const buyerLogin = async (req, res, next) => {
             password: Joi.string().pattern(new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/)).required()
         }).with('email', 'password')
 
-        const validatedSchema = await validateLoginSchema.validateAsync({ email, password })
+        await validateLoginSchema.validateAsync({ email, password })
         next()
     }
     catch (error) {
@@ -43,27 +42,20 @@ export const buyerLogin = async (req, res, next) => {
 
 export const buyerUpdate = async (req, res, next) => {
     try {
-        const { userId } = req.query
-        if (!userId) {
-            return sendError(res, 400, 'please send userId to update')
-        }
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return sendError(res, 400, 'send valid id')
-        }
+
         if (Object.keys(req.body).length == 0) {
             return sendError(res, 400, 'no body content find to update')
         }
-        const user = req.body
+
         const validateUpdateSchema = Joi.object({
-            userId: Joi.string(),
             name: Joi.string(),
             email: Joi.string().email(),
             password: Joi.string().pattern(new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/)),
             contact: Joi.string(),
-            country:Joi.string()
+            country: Joi.string()
         })
 
-        const validatedSchema = await validateUpdateSchema.validateAsync({ userId, ...user })
+        await validateUpdateSchema.validateAsync(req.body)
         next()
     }
     catch (error) {
@@ -71,24 +63,23 @@ export const buyerUpdate = async (req, res, next) => {
     }
 }
 
-
-export const buyerDelete = async (req, res, next) => {
+export const buyerOrderValidation = async (req, res, next) => {
     try {
-        if (Object.keys(req.query).length == 0) {
-            return sendError(res, 400, "please send userId to delete")
+        if (Object.keys(req.body).length == 0) {
+            return response.sendError(res, 400, 'send content to order product')
         }
-        const { userId } = req.query
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return sendError(res, 400, 'send valid id')
-        }
-        const validateDeleteSchema = Joi.object({
-            userId: Joi.string().required(),
+        const validateSchema = Joi.object({
+            buyerName: Joi.string().required(),
+            buyerId: Joi.string().hex().length(24).required(),
+            buyerEmail: Joi.string().email().required(),
+            buyerCountry: Joi.string().required(),
+            quantity: Joi.number().required()
         })
-        const validatedSchema = await validateDeleteSchema.validateAsync({ userId })
+
+        await validateSchema.validateAsync(req.body)
         next()
     }
     catch (error) {
         return sendError(res, 500, error.message)
     }
 }
-
