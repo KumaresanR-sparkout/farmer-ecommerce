@@ -5,5 +5,4 @@ export const availableCountry = async (fromCountry, toCountry) => {
         return false
     }
     return true
-
 }

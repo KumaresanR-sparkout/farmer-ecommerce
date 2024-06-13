@@ -6,7 +6,7 @@ import os from 'os'
 import mainRouter from './routes/main-routes/common-route'
 import { dbConnection } from './config/dbConfig'
 import { apiRateLimit } from './utils/api-rate-limit'
-import {sendNotification} from '../src/cron/schedule.cron'
+import { sendNotification } from '../src/cron/schedule.cron'
 
 env.config()
 const CPUS = os.cpus().length

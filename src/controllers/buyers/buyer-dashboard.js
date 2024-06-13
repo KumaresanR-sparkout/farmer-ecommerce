@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import Product from '../../models/product.model'
 import Order from '../../models/order.model'
 import { sendEmail } from '../../emails/mail-sender'
@@ -5,7 +6,6 @@ import { buyerTemplate } from '../../emails/templates/buyer-template'
 import { farmerTemplate } from '../../emails/templates/farmer-template'
 import { availableCountry } from '../utils/shipment-country'
 import * as response from '../../utils/response-util'
-import mongoose from 'mongoose'
 
 export const filterProducts = async (req, res) => {
     try {

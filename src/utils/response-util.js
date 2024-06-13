@@ -1,6 +1,6 @@
 export const sendSuccess = (res, statusCode, message, data) => {
     const response = {
-        "statusCode": statusCode,
+        "status_code": statusCode,
         "status": true,
         "message": message,
         "data": data
@@ -11,7 +11,7 @@ export const sendSuccess = (res, statusCode, message, data) => {
 
 export const sendError = (res, statusCode, message) => {
     const response = {
-        "statusCode": statusCode,
+        "status_code": statusCode,
         "status": false,
         "message": message
     }
